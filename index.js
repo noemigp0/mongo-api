@@ -88,12 +88,12 @@ const Koders = mongoose.model("Koder", koderShema);
 // })
 
 app.get("/koders/:identificador", async (request, response) => {
-    console.log("Entre");
+  console.log("Entre");
   try {
-    const { identificador } = request.params
-   // const { name, modulo } = request.query
+    const { identificador } = request.params;
+    // const { name, modulo } = request.query
     //const koder = await Koders.find({ name: name, modulo: modulo}) // ejemplo con filtros
-    const koder = await Koders.findById(identificador, "name") //Ejemplo para cortar el json
+    const koder = await Koders.findById(identificador, "name"); //Ejemplo para cortar el json
     response.json({
       success: true,
       data: {
@@ -116,35 +116,71 @@ app.patch("koderss/:id", async (request, response) => {
   response.json("entre al patch");
 });
 
-
 //endpoint de patch
 //Actualizar un koder
 //Validen errroes
 
 app.patch("/koderssu/:id", async (request, response) => {
-   
-   try{
-    const { id } = request.params
+  try {
+    const { id } = request.params;
     //console.log(id)
-    const newKoder = request.body
-   
-    const koderUpdated = await Koders.findByIdAndUpdate(id, newKoder)
-    
+    const newKoder = request.body;
 
-    
+    const koderUpdated = await Koders.findByIdAndUpdate(id, newKoder);
+
     response.json({
-        success: true,
-        koderUpdated
+      success: true,
+      koderUpdated,
+    });
+  } catch (err) {
+    response.status(404)
+    response.json({
+      sucess: false,
+      message: err.message,
+    });
+  }
+});
+
+
+//Post
+//Delete
+
+app.post("/newkoder", async (request, response) => {
+    try {
+        const newKoder = request.body
+        const createKoder = await Koders.create(newKoder)
+        response.status(201)
+        response.json({
+            success: true,
+            createKoder
+        })
+
+    } catch (error) {
+        response.status(404)
+        response.json({
+            success: false,
+            message: error.message
+        })
     }
+})
 
-    )
-   } catch (err) {
-    //response.status(404)
-    response.json({
-        sucess:false,
-        message: err.message
-    })
-   }
 
-    
+app.delete("/detelekoder/:id", async (request, response) => {
+    try{
+        const { id } = request.params
+        const deleteKoder = await Koders.deleteOne({ _id: id})
+
+        response.status(200)
+        response.json({
+            success: true,
+            deleteKoder
+        })
+
+    }catch (error){
+        response.status(404)
+        response.json({
+            success: false,
+            message: error.message
+        })
+    }
 })
