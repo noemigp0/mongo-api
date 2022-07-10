@@ -145,7 +145,53 @@ app.patch("/koderssu/:id", async (request, response) => {
 //Post
 //Delete
 
-app.post("/newkoder", async (request, response) => {
+
+
+
+app.delete("/detelekoder/:id", async (request, response) => {
+    try{
+        const { id } = request.params
+        //const deleteKoder = await Koders.deleteOne({ _id: id})//mi forma
+        const deleteKoder = await Koders.findByIdAndDelete(id)
+
+        response.status(200)
+        response.json({
+            success: true,
+            deleteKoder
+        })
+
+    }catch (error){
+        response.status(404)
+        response.json({
+            success: false,
+            message: error.message
+        })
+    }
+})
+
+
+//Ejemplo de middleware
+// app.use((request, response, next) => {
+//     console.log("Estoy en mi MIDDLEWARE 1", request.body)
+//     //Actualizar cuando se hace un endpoint
+//     //Formatear fechas
+//     request.body["created_at"] = new Date()
+
+//     next()//Es uan funsion que se ejecuta
+// })
+
+// app.use((request, response, next) => {
+//     console.log("Estoy en mi MIDDLEWARE 2", request.body)
+//         next()//Es uan funsion que se ejecuta
+// })
+
+const middleRuta = (request, response, next) =>  {
+    console.log("Esto es una funsion")
+    next()
+} 
+
+app.post("/newkoder", middleRuta, async (request, response) => {//El middleware se pasa como segundo parametro, y no se debe hacer algo mas para invocar
+    console.log(request.body);
     try {
         const newKoder = request.body
         const createKoder = await Koders.create(newKoder)
@@ -156,27 +202,6 @@ app.post("/newkoder", async (request, response) => {
         })
 
     } catch (error) {
-        response.status(404)
-        response.json({
-            success: false,
-            message: error.message
-        })
-    }
-})
-
-
-app.delete("/detelekoder/:id", async (request, response) => {
-    try{
-        const { id } = request.params
-        const deleteKoder = await Koders.deleteOne({ _id: id})
-
-        response.status(200)
-        response.json({
-            success: true,
-            deleteKoder
-        })
-
-    }catch (error){
         response.status(404)
         response.json({
             success: false,
